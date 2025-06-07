@@ -9,47 +9,53 @@ namespace CitiesManager.WebApi.Controllers
     [AllowAnonymous]
     public class AccountController : CustomControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userName;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<ApplicationRole> _roleManager;
         public AccountController(UserManager<ApplicationUser> userName, SignInManager<ApplicationUser> signInManager, RoleManager<ApplicationRole> roleManager)
         {
             _signInManager = signInManager;
             _roleManager = roleManager;
-            _userName = userName;
+            _userManager = userName;
         }
         [HttpPost("register")]
-        public async Task<IActionResult> PostRegister(RegisterDTO registerDTO)
+        public async Task<ActionResult<ApplicationUser>> PostRegister(RegisterDTO registerDTO)
         {
-            if(ModelState.IsValid == false)
+            //Validation
+            if (ModelState.IsValid == false)
             {
-                string err = String.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)).ToString();
-                return Problem(err);
+                string errorMessage = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                return Problem(errorMessage);
             }
-            var user = new ApplicationUser
+
+
+            //Create user
+            ApplicationUser user = new ApplicationUser()
             {
-                UserName = registerDTO.Email,
                 Email = registerDTO.Email,
                 PhoneNumber = registerDTO.PhoneNumber,
+                UserName = registerDTO.Email,
                 PersonName = registerDTO.PersonName
             };
 
-            IdentityResult result = await _userName.CreateAsync(user, registerDTO.Password);
+            IdentityResult result = await _userManager.CreateAsync(user, registerDTO.Password);
 
             if (result.Succeeded)
             {
-               await _signInManager.SignInAsync(user, isPersistent: false);
-               return Ok(user);
+                //sign-in
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                return Ok(user);
             }
             else
             {
-                string err = String.Join(" | ", result.Errors.Select(e => e.Description)).ToString();
-                return Problem(err);
+                string errorMessage = string.Join(" | ", result.Errors.Select(e => e.Description)); //error1 | error2
+                return Problem(errorMessage);
             }
         }
-        public async Task<IActionResult> IsEmailAlreadyRegister(string email)
+        private async Task<IActionResult> IsEmailAlreadyRegister(string email)
         {
-            var user = await _userName.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user != null)
             {
                 return Ok(false);

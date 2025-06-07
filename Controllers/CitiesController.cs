@@ -10,7 +10,7 @@ using CitiesManager.Core.Models;
 using Microsoft.AspNetCore.Cors;
 using CitiesManager.Infrastructure.DatabaseContext;
 
-namespace CitiesManager.WebApi.Controllers.v1
+namespace CitiesManager.WebApi.Controllers
 {
     public class CitiesController : CustomControllerBase
     {

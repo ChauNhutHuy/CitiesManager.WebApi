@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { RegisterUser } from '../models/register-user';
 import { Observable } from 'rxjs';
-const API_BASE_URL = "https://localhost:7147/api/account";
+const API_BASE_URL = "https://localhost:7147/api/Account";
 @Injectable({
   providedIn: 'root'
 })
