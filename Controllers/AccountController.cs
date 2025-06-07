@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CitiesManager.WebApi.Controllers
 {
     [AllowAnonymous]
-    public class AccountController : ControllerBase
+    public class AccountController : CustomControllerBase
     {
         private readonly UserManager<ApplicationUser> _userName;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -18,7 +18,7 @@ namespace CitiesManager.WebApi.Controllers
             _roleManager = roleManager;
             _userName = userName;
         }
-        [HttpPost()]
+        [HttpPost("register")]
         public async Task<IActionResult> PostRegister(RegisterDTO registerDTO)
         {
             if(ModelState.IsValid == false)
